@@ -1,5 +1,98 @@
 <script>
+	import gsap from 'gsap';
+	import { onMount } from 'svelte';
+
 	const grid = [14, 30];
+
+	onMount(() => {
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		if (prefersReducedMotion) {
+			gsap.set('#triangle-grid', {
+				opacity: 1
+			});
+			gsap.set('.triangle-grid-item', {
+				opacity: 0.2,
+				scale: 1
+			});
+
+			return;
+		}
+
+		gsap.set('.triangle-grid-item', { opacity: 0, transformOrigin: 'center', color: '#fff' });
+		gsap.set('#triangle-grid', { opacity: 1 });
+
+		const tl = gsap.timeline();
+
+		// Entrance animate
+
+		tl.to('.triangle-grid-item', {
+			keyframes: [
+				{
+					opacity: 0,
+					duration: 0
+				},
+				{
+					opacity: 0.4,
+					rotate: '+=180',
+					color: '#A78BFA',
+					scale: 3,
+					duration: 0.6,
+					stagger: {
+						amount: 2,
+						grid,
+						from: 'center'
+					}
+				},
+				{
+					opacity: 0.2,
+					rotate: '+=180',
+					color: 'FFF',
+					scale: 1,
+					duration: 0.6,
+					delay: -2,
+					stagger: {
+						amount: 3,
+						grid,
+						from: 'center'
+					}
+				}
+			]
+		});
+
+		//loop
+		tl.to('.triangle-grid-item', {
+			delay: 12,
+			repeat: -1,
+			repeatDelay: 12,
+			keyframes: [
+				{
+					opacity: 0.4,
+					rotate: '+=180',
+					color: '#A78BFA',
+					scale: 3,
+					duration: 0.6,
+					stagger: {
+						amount: 2,
+						grid,
+						from: 'center'
+					}
+				},
+				{
+					opacity: 0.2,
+					rotate: '+=180',
+					color: 'FFF',
+					scale: 1,
+					duration: 0.6,
+					delay: -2,
+					stagger: {
+						amount: 3,
+						grid,
+						from: 'center'
+					}
+				}
+			]
+		});
+	});
 </script>
 
 <svg
@@ -8,7 +101,7 @@
 	viewBox="0 0 935 425"
 	class="absolute -left-2 -top-14 -z-10"
 	id="triangle-grid"
-	opacity={1}
+	opacity={0}
 	style="mask-image: linear-gradient(black, transparent);"
 >
 	<g class="triangle-grid-group">

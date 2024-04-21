@@ -2,6 +2,9 @@
 	import Bounded from '$lib/components/Bounded.svelte';
 	import ButtonLink from '$lib/components/ButtonLink.svelte';
 	import { PrismicImage, PrismicRichText, PrismicText } from '@prismicio/svelte';
+	import gsap from 'gsap';
+	import ScrollTrigger from 'gsap/dist/ScrollTrigger';
+	import { onMount } from 'svelte';
 
 	import IconCycle from '~icons/ph/arrows-clockwise';
 	import IconGear from '~icons/ph/gear';
@@ -13,15 +16,53 @@
 		gear: IconGear,
 		cycle: IconCycle
 	};
+
+	onMount(() => {
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		if (prefersReducedMotion) return;
+
+		gsap.registerPlugin(ScrollTrigger);
+
+		gsap.fromTo(
+			'.showcase__heading',
+			{ y: 100 },
+			{
+				y: 0,
+				ease: 'power2.inOut',
+				duration: 1,
+				scrollTrigger: {
+					trigger: '.showcase__heading',
+					start: 'top bottom-=40%',
+					toggleActions: 'play pause resume reverse'
+				}
+			}
+		);
+
+		gsap.fromTo(
+			'.showcase__glow',
+			{ scale: 0.7, opacity: 0.1 },
+			{
+				scale: 1,
+				opacity: 0.35,
+				ease: 'power2.inOut',
+				duration: 1,
+				scrollTrigger: {
+					trigger: '.showcase__heading',
+					start: 'top bottom-=40%',
+					toggleActions: 'play pause resume reverse'
+				}
+			}
+		);
+	});
 </script>
 
 <Bounded data-slice-type={slice.slice_type} data-slice-variation={slice.variation}>
 	<div
-		class="absolute -z-10 aspect-video w-full max-w-2xl rounded-full bg-violet-500/40 mix-blend-screen blur-[120px] filter"
+		class="showcase__glow absolute -z-10 aspect-video w-full max-w-2xl rounded-full bg-violet-500 mix-blend-screen blur-[120px] filter"
 	/>
 
 	{#if slice.primary.heading}
-		<div class="text-balance text-center text-5xl font-medium md:text-7xl">
+		<div class="showcase__heading text-balance text-center text-5xl font-medium md:text-7xl">
 			<PrismicRichText field={slice.primary.heading} />
 		</div>
 	{/if}
